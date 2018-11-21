@@ -153,6 +153,9 @@ public class PokemonTokens {
 		tokens.put("pokeball_name", (p, v, m) -> Optional.of(GTS.getInstance().getTextParsingUtils().getPokemonInfo(
 				getPokemonFromVariableIfExists(m), EnumPokemonFields.POKE_BALL_NAME
 		)));
+		tokens.put("aura_name", (p, v, m) -> Optional.of(GTS.getInstance().getTextParsingUtils().getPokemonInfo(
+				getPokemonFromVariableIfExists(m), EnumPokemonFields.AURA_NAME
+		)));
 	}
 
 	public static Map<String, Translator> getTokens() {

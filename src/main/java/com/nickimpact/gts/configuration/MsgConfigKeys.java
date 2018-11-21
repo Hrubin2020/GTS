@@ -138,6 +138,15 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<List<String>> POKEMON_ENTRY_BASE_LAKE_TRIO = ListKey.of("entries.pokemon.base.lore.lake-trio", Lists.newArrayList(
 			"&7Gemmed: &e{{enchanted}}"
 	));
+	public static final ConfigKey<List<String>> POKEMON_UNBREEDABLE = ListKey.of("entries.pokemon.base.lore.unbreedable", Lists.newArrayList(
+			"{{unbreedable}}"
+	));
+	public static final ConfigKey<List<String>> POKEMON_AURA = ListKey.of("entries.pokemon.base.lore.aura", Lists.newArrayList(
+			"{{aura_name}}"
+	));
+	public static final ConfigKey<List<String>> POKEMON_TEXTURE = ListKey.of("entries.pokemon.base.lore.texture", Lists.newArrayList(
+			"{{texture}}"
+	));
 	public static final ConfigKey<String> POKEMON_ENTRY_CONFIRM_TITLE = StringKey.of("entries.pokemon.confirm.title", "&ePurchase {{pokemon}}?");
 	public static final ConfigKey<List<String>> POKEMON_ENTRY_CONFIRM_LORE = ListKey.of("entries.pokemon.confirm.lore", Lists.newArrayList(
 			"&7Here's some additional info:",

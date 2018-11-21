@@ -12,6 +12,9 @@ import com.pixelmonmod.pixelmon.entities.pixelmon.stats.StatsType;
 import com.pixelmonmod.pixelmon.enums.EnumPokemon;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import net.minecraft.nbt.NBTTagCompound;
+import org.spongepowered.api.data.key.Key;
+import org.spongepowered.api.data.value.mutable.Value;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -106,10 +109,12 @@ public enum EnumPokemonFields {
 
 		String texture = nbt.getString(NbtKeys.CUSTOM_TEXTURE);
 		if(!texture.isEmpty()) {
-			return texture;
+			String specialTexture = texture.replaceAll("\\d*$", "");
+			specialTexture = specialTexture.substring(0, 1).toUpperCase() + specialTexture.substring(1);
+			return specialTexture;
+		}else{
+			return 0;
 		}
-
-		return pokemon.getIsShiny() ? "Shiny" : "Normal";
 	}),
 	SPECIAL_TEXTURE(pokemon -> {
 		return EnumSpecialTexture.fromIndex(pokemon.getSpecialTextureIndex()).name();
@@ -125,13 +130,23 @@ public enum EnumPokemonFields {
 	UNBREEDABLE(pokemon -> {
 		PokemonSpec unbreedable = new PokemonSpec("unbreedable");
 		if(unbreedable.matches(pokemon)){
-			return "\u00a74Unbreedable";
+			return "\u00a7cUnbreedable";
 		}else{
-			return "\u00a7cBreedable";
+			return 0;
 		}
 	}),
 	POKE_BALL_NAME(pokemon ->{
 		return pokemon.caughtBall.name();
+	}),
+	AURA_NAME(pokemon -> {
+		Key<Value<String>> idKey = (Key<Value<String>>)((Entity)pokemon).getKeys().stream().filter(key -> key.getId().equals("entity-particles:id")).findFirst().orElse(null);
+		if (idKey != null) {
+			String key = ((Entity)pokemon).get(idKey).orElse(null);
+			if(key == null || key.length() == 1) return 0;
+			return key.substring(0, 1).toUpperCase() + key.substring(1);
+		}else{
+			return 0;
+		}
 	});
 
 

@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.api.exceptions.PluginAlreadyRegisteredEx
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
@@ -64,6 +65,18 @@ public final class TokenService implements NucleusMessageTokenService.TokenParse
 				return Optional.empty();
 
 			return Optional.of(listing.getEntry().getPrice().getText());
+		});
+
+		translatorMap.put("count", (p, v, m) -> {
+			Listing listing = getListingFromVaribleIfExists(m);
+			Player player = (Player) p;
+			if(player == null) return Optional.empty();
+			if(listing == null)
+				return Optional.empty();
+			ItemStack stack = listing.getEntry().getBaseDisplay(player, listing);
+			int count = stack.getQuantity();
+			if(count == 1 || count == 0) return Optional.empty();
+			return Optional.of(Text.of(count + "x"));
 		});
 		translatorMap.put("auc_price", (p, v, m) -> {
 			Listing listing = getListingFromVaribleIfExists(m);
@@ -123,16 +136,22 @@ public final class TokenService implements NucleusMessageTokenService.TokenParse
 				return Optional.empty();
 			}
 
-			try {
-				return Optional.of(GTS.getInstance().getTextParsingUtils().parse(
-						listing.getEntry().getSpecsTemplate(),
-						p,
-						null,
-						m
-				));
-			} catch (NucleusException e) {
+			Player player = (Player) p;
+			if(player == null) return Optional.empty();
+			if(listing == null)
 				return Optional.empty();
-			}
+			ItemStack stack = listing.getEntry().getBaseDisplay(player, listing);
+			int count = stack.getQuantity();
+				try {
+					return Optional.of(GTS.getInstance().getTextParsingUtils().parse(
+							listing.getEntry().getSpecsTemplate(),
+							p,
+							null,
+							m
+					));
+				} catch (NucleusException e) {
+					return Optional.empty();
+				}
 		});
 		translatorMap.put("listing_name", (p, v, m) -> {
 			Listing listing = getListingFromVaribleIfExists(m);

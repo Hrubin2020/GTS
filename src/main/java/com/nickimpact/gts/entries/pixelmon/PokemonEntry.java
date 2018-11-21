@@ -42,6 +42,9 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.data.key.Key;
+import org.spongepowered.api.data.value.mutable.Value;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemTypes;
@@ -84,6 +87,7 @@ public class PokemonEntry extends Entry<Pokemon> implements Minable {
 
 	@Override
 	public String getSpecsTemplate() {
+		List<String> template = Lists.newArrayList();
 		if(this.getEntry().getPokemon().isEgg) {
 			return GTS.getInstance().getMsgConfig().get(MsgConfigKeys.POKEMON_ENTRY_SPEC_TEMPLATE_EGG);
 		}
@@ -113,6 +117,24 @@ public class PokemonEntry extends Entry<Pokemon> implements Minable {
 	@Override
 	public List<String> baseLoreTemplate(boolean auction) {
 		List<String> template = Lists.newArrayList();
+
+		NBTTagCompound nbt = new NBTTagCompound();
+		this.getEntry().getPokemon().writeToNBT(nbt);
+		String texture = nbt.getString(NbtKeys.CUSTOM_TEXTURE);
+
+		if(new PokemonSpec("unbreedable").matches(this.getEntry().getPokemon())){
+			template.addAll(GTS.getInstance().getMsgConfig().get(MsgConfigKeys.POKEMON_UNBREEDABLE));
+		}
+		if(!texture.isEmpty()){
+			template.addAll(GTS.getInstance().getMsgConfig().get(MsgConfigKeys.POKEMON_TEXTURE));
+		}
+		Key<Value<String>> idKey = (Key<Value<String>>)((Entity)this.getEntry().getPokemon()).getKeys().stream().filter(key -> key.getId().equals("entity-particles:id")).findFirst().orElse(null);
+		if (idKey != null) {
+			String key = ((Entity)this.getEntry().getPokemon()).get(idKey).orElse(null);
+			if(!(key == null) || !(key.length() == 1)) {
+				template.addAll(GTS.getInstance().getMsgConfig().get(MsgConfigKeys.POKEMON_AURA));
+			}
+		}
 		template.addAll(GTS.getInstance().getMsgConfig().get(MsgConfigKeys.POKEMON_ENTRY_BASE_LORE));
 
 		if(this.getEntry().getPokemon().getSpecies().equals(EnumPokemon.Mew)) {
